@@ -55,5 +55,5 @@ Label(frame, text='Bạn chưa có tài khoản?', fg='black', bg='white', font=
 sign_up = Button(frame, width=6, text='Đăng ký', border=0, bg='white', cursor='hand2', fg='#FF5C8D', font=('Arial', 9))
 sign_up.place(x=215, y=270)
 
-rewfaw
+
 root.mainloop()
