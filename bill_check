@@ -1,0 +1,29 @@
+from tkinter import *
+from tkinter import ttk
+
+class Window:
+    def __init__(self, root):
+        self.root = root
+        self.root.title('BILL CHECK')
+        self.root.geometry("925x500+300+150")
+        self.root.configure(bg="#fff")
+
+        self.label=Label(self.root, text='ĐƠN HÀNG', fg='#FE83C6', bg='white', font=('Arial', 26, 'bold')).place(x=120, y=20)
+
+        self.columns=['Name', 'Price', 'Description']
+        self.my_tree = ttk.Treeview(self.root, columns=self.columns, show='headings')
+        self.my_tree.heading("Name", text="Name")
+        self.my_tree.heading("Price", text="Phone Number")
+        self.my_tree.heading("Description", text="Address")
+        self.my_tree.column("Name", anchor=CENTER, width=150, minwidth=0, stretch=NO)
+        self.my_tree.column("Price", anchor=CENTER, width=100, minwidth=0, stretch=NO)
+        self.my_tree.column("Description", anchor=CENTER, width=150, minwidth=0, stretch=NO)
+        self.my_tree.insert(parent='', index='end', value=("P.Nguyen", "0927467823", "ktx"))
+        self.my_tree.place(x=500, y=20)
+
+        self.tottal=Button(self.root, text= 'TOTTAL', font=('Arial', 12, 'bold'), width=16).place(x=500, y=260)
+        self.tottal=Button(self.root, text= 'ĐẶT HÀNG', font=('Arial', 12, 'bold'), width=16).place(x=732, y=260)
+
+root = Tk()
+t = Window(root)
+root.mainloop()
