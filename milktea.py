@@ -44,7 +44,7 @@ class Window:
         self.show_password = Button(self.frame, image=self.show_img, command=self.show, bg='white', cursor='hand2', border=0)
         self.show_password.place(x=300, y=150)
         
-        # Đănký
+        # Đăng ký
         self.sign_up = Button(self.frame, width=6, text='Đăng ký', border=0, bg='white', cursor='hand2', fg='#FF5C8D', font=('Arial', 9))
         self.sign_up.place(x=215, y=270)
         
