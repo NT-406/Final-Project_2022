@@ -175,38 +175,58 @@ class Window:
         self.root.configure(background="#E9EFC0")
         # self.root.resizable(width=FALSE, height=FALSE)
 
+        self.mongo_client = MongoClient("mongodb://localhost:27017")
+        self.db = self.mongo_client["FINALPROJECT"]
+        self.col = self.db["bill"]
+
         # Giao diện chính
         self.title = Label(self.root, text="NT COFFEE", fg="#EB5353", bg="#B4E197", font=("Blacklisted", 40, "bold")).place(x=540, y=10)
         # self.img_menu = PhotoImage(file=r"C:\Users\Admin\Downloads\2.png")
         # Label(self.root, image=self.img_menu).place(x=60, y=120)
 
         #Chọn đơn hàng
-        self.name = Combobox(self.root, values=['Phin Đen', 'Phin Sữa', 'Bạc Xỉu', 'Cappuccino','Trà sữa Oreo', 'Trà sữa Olong','Matcha Macchiato','Matcha đá xay','Oreo Đá xay'], width=25).place(x=950, y=160)
+
+        self.name = Combobox(self.root, values=('Phin Đen', 'Phin Sữa', 'Bạc Xỉu', 'Cappuccino','Trà sữa Oreo', 'Trà sữa Olong','Matcha Macchiato','Matcha đá xay','Oreo Đá xay'), width=25)
+        self.name.place(x=950, y=160)
         self.lb_name = Label(self.root, text="Name", fg="#EB5353", bg="#E9EFC0", font=("Arial", 20)).place(x=800, y=150)
-        self.size = Combobox(self.root, values=['Size M', 'Size L'], width=25).place(x=950, y=240)
+
+        self.size = Combobox(self.root, values=('Size M', 'Size L'), width=25)
+        self.size.place(x=950, y=240)
         self.lb_size = Label(self.root, text="Size", fg="#EB5353", bg="#E9EFC0", font=("Arial", 20)).place(x=800, y=230)
-        self.amount = Entry(self.root,width=30).place(x=950, y=320)
+        self.varamount=StringVar()
+        self.amount = Entry(self.root,width=30)
+        self.amount.place(x=950, y=320)
         self.lb_amount = Label(self.root, text="Amount", fg="#EB5353", bg="#E9EFC0", font=("Arial", 20)).place(x=800, y=310)
 
         #Button chọn hàng + đặt hàng
-        self.bt_choose = Button(self.root, text='Choose', font=("Arial", 25, "bold"), activebackground="#B4E197").place(x=1125, y=400)
-        self.bt_end = Button(self.root, text='Chốt đơn', font=("Arial", 25, "bold"), activebackground="#B4E197").place(x=1125, y=500)
+        self.bt_choose = Button(self.root, text='Choose', font=("Arial", 25, "bold"), activebackground="#B4E197", command=self.save).place(x=1110, y=400)
+        self.bt_end = Button(self.root, text='Chốt đơn', font=("Arial", 25, "bold"), activebackground="#B4E197").place(x=1110, y=500)
 
 
 
-    #     self.tree = self.creat_treeview()
-    #
-    # def creat_treeview(self):
-    #     col = ('Name', 'Amount', 'Price')
-    #     tree = Treeview(columns=col, show='headings')
-    #     tree.heading('Name', text='Name', anchor=CENTER)
-    #     tree.heading('Amount', text='Amount', anchor=CENTER)
-    #     tree.heading('Price', text='Price', anchor=CENTER)
-    #     tree.column('Name', minwidth=50, width=80)
-    #     tree.column('Amount', minwidth=50, width=80)
-    #     tree.column('Price', minwidth=50, width=80)
-    #     tree.place(x=100, y=400, width=900, height=250)
-        # return self.tree
+        self.tree = ttk.Treeview(self.root, columns=("name", "size", "amount"), height=10)
+        # self.tree.bind('<Double-ButtonRelease-1>', self.selectItem)
+        self.tree.heading("name", text="Name")
+        self.tree.heading("size", text="size")
+        self.tree.heading("amount", text="Amount")
+        self.tree.column("#0", stretch=NO, minwidth=0, width=0)
+        self.tree.place(x=500, y=400)
+
+
+    def save(self):
+        self.data = {"name": self.name.get(),"size": self.size.get(), "amount": self.amount.get()}
+        self.doc = self.col.insert_one(self.data)
+        if self.doc.inserted_id:
+            messagebox.showinfo("Insert","Success!")
+        self.load_data()
+        self.order()
+    def load_data(self):
+        self.cur = self.col.find({})
+        for d in self.cur:
+            self.tree_name = str(d['name'].encode('utf-8').decode('utf-8'))
+            self.tree_size = str(d['size'].encode('utf-8').decode('utf-8'))
+            self.tree_amount = d['amount']
+            self.tree.insert("", "end", values=(d['name'], d['size'], d['amount']))
 
 
 root = Tk()
