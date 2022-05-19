@@ -1,21 +1,22 @@
-
 from tkinter import *
+from tkinter import ttk
 from tkinter.ttk import Combobox
+from pymongo import *
 from PIL import Image, ImageTk
 from tkinter import messagebox
 
 class Window:
     def __init__(self, root):
         self.root = root
-        self.root.title('NT COFFEE')
+        self.root.title('Tiệm trà sữa NT')
         self.root.geometry("925x500+300+150")
         self.root.configure(bg="#fff")
-        self.root.resizable(False, False)
+        # self.root.resizable(False, False)
 
         # self.img = PhotoImage(file=r"C:\Users\USER\Downloads\boba.png")
         # Label(self.root, image=self.img, bg='white', width=300).place(x=60, y=70)
 
-        Label(self.root, text='NT COFFEE', fg='#FE83C6', bg='white', font=('Arial', 26, 'bold')).place(x=120, y=20)
+        Label(self.root, text='Trà sữa NT', fg='#FE83C6', bg='white', font=('Arial', 26, 'bold')).place(x=120, y=20)
 
         self.frame = Frame(self.root, width=350, height=350, bg="white")
         self.frame.place(x=480, y=70)
@@ -71,13 +72,15 @@ class Window:
                                     cursor="hand2", border=0)
         self.show_password.place(x=300, y=150)
         self.p.config(show='*')
-
-
     def signup(self):
         self.rootdangki = Tk()
         self.rootdangki.title('Tiệm trà sữa NT')
         self.rootdangki.geometry("925x900+300+150")
         self.rootdangki.configure(bg="#fff")
+
+        self.mongo_client = MongoClient("mongodb://localhost:27017")
+        self.db = self.mongo_client["FINALPROJECT"]
+        self.col = self.db["user"]
 
         # img = ImageTk.PhotoImage(Image.open(r"C:\Users\Helloo\Downloads\111.png").resize ((300, 300), Image.ANTIALIAS))
         # Label(self.rootdangki, image=img, bg='white', width=300).place(x=60, y=70)
@@ -89,7 +92,8 @@ class Window:
         self.heading.place(x=100, y=5)
 
         # Tên đăng nhập
-        self.user = Entry(self.frame, width=25, fg='black', border=0, bg='white', font=('Arial', 11))
+        self.username = StringVar()
+        self.user = Entry(self.frame, width=25, fg='black', border=0, bg='white', font=('Arial', 11), textvariable=self.username)
         self.user.place(x=30, y=80)
         self.user.insert(0, 'Hãy nhập tên đăng nhập')
         Frame(self.frame, width=295, height=2, bg='black').place(x=25, y=107)
@@ -102,17 +106,18 @@ class Window:
         clicked = self.user.bind('<Button-1>', click)
 
         # Mật khẩu
-        self.password = Entry(self.frame, width=25, fg='black', border=0, bg='white', font=('Arial', 11))
+        self.mk=StringVar()
+        self.password = Entry(self.frame, width=25, fg='black', border=0, bg='white', font=('Arial', 11), textvariable=self.mk)
         self.password.place(x=30, y=150)
         self.password.insert(0, 'Hãy nhập mật khẩu')
         Frame(self.frame, width=295, height=2, bg='black').place(x=25, y=177)
-
-        def click(event):
-            self.password.configure(state=NORMAL)
-            self.password.delete(0, END)
-            self.password.unbind('<Button-1>', clicked)
-
-        clicked = self.password.bind('<Button-1>', click)
+        #
+        # def click(event):
+        #     self.password.configure(state=NORMAL)
+        #     self.password.delete(0, END)
+        #     self.password.unbind('<Button-1>', clicked)
+        #
+        # clicked = self.password.bind('<Button-1>', click)
 
         # Mật khẩu
         self.password = Entry(self.frame, width=25, fg='black', border=0, bg='white', font=('Arial', 11))
@@ -120,23 +125,18 @@ class Window:
         self.password.insert(0, 'Hãy nhập lại mật khẩu')
         Frame(self.frame, width=295, height=2, bg='black').place(x=25, y=247)
 
-        def click(event):
-            self.password.configure(state=NORMAL)
-            self.password.delete(0, END)
-            self.password.unbind('<Button-1>', clicked)
-
-        clicked = self.password.bind('<Button-1>', click)
+        # def click(event):
+        #     self.password.configure(state=NORMAL)
+        #     self.password.delete(0, END)
+        #     self.password.unbind('<Button-1>', clicked)
+        #
+        # clicked = self.password.bind('<Button-1>', click)
 
         # sđt
         self.phone = Entry(self.frame, width=25, fg='black', border=0, bg='white', font=('Arial', 11))
         self.phone.place(x=30, y=290)
         self.phone.insert(0, 'Hãy nhập số điện thoại')
         Frame(self.frame, width=295, height=2, bg='black').place(x=25, y=317)
-
-        def click(event):
-            self.phone.configure(state=NORMAL)
-            self.phone.delete(0, END)
-            self.phone.unbind('<Button-1>', clicked)
 
         clicked = self.phone.bind('<Button-1>', click)
 
@@ -154,7 +154,7 @@ class Window:
         clicked = self.address.bind('<Button-1>', click)
 
         Button(self.frame, width=39, pady=7, text='Đăng ký tài khoản', bg='#FE83C6', fg='white', border=0,
-               font=('Arial', 9), command=self.close).place(x=35, y=400)
+               font=('Arial', 9)).place(x=35, y=400)
         # chưa xong chức năng
         Label(self.frame, text='Bạn đã đăng ký thành công', fg='black', bg='white', font=('Arial', 9)).place(x=75,
                                                                                                              y=440)
@@ -165,8 +165,6 @@ class Window:
 
         self.rootdangki.mainloop()
 
-    def close(self):
-        self.rootdangki.destroy()
 
     def order(self):
         self.root = Tk()
@@ -199,8 +197,9 @@ class Window:
         self.lb_amount = Label(self.root, text="Amount", fg="#EB5353", bg="#E9EFC0", font=("Arial", 20)).place(x=800, y=310)
 
         #Button chọn hàng + đặt hàng
-        self.bt_choose = Button(self.root, text='Choose', font=("Arial", 25, "bold"), activebackground="#B4E197", command=self.save).place(x=1110, y=400)
-        self.bt_end = Button(self.root, text='Chốt đơn', font=("Arial", 25, "bold"), activebackground="#B4E197").place(x=1110, y=500)
+        self.ordered_product = []
+        self.bt_choose = Button(self.root, text='Choose', font=("Arial", 25, "bold"), activebackground="#B4E197", command=self.insert_product).place(x=1110, y=400)
+        self.bt_end = Button(self.root, text='Chốt đơn', font=("Arial", 25, "bold"), activebackground="#B4E197", command=self.save).place(x=1110, y=500)
 
 
 
@@ -212,24 +211,46 @@ class Window:
         self.tree.column("#0", stretch=NO, minwidth=0, width=0)
         self.tree.place(x=500, y=400)
 
+    def insert_product(self):
+        self.tree.insert('','end', values=(self.name.get(), self.size.get(), self.amount.get()))
+        self.ordered_product.append({
+            "name": self.name.get(),
+            "size": self.size.get(),
+            "amount": self.amount.get()
+        })
 
     def save(self):
-        self.data = {"name": self.name.get(),"size": self.size.get(), "amount": self.amount.get()}
+        # Name = self.NameEntry.get()
+        # Price=self.PriceEntry.get()
+        # Des= self.DescriptionText.get("1.0","end-1c")
+        # self.tree.insert('','end',values=(Name,Price,Des))
+        self.data = {"numsOfProducts": len(self.ordered_product),
+                     "products": self.ordered_product
+                    }
         self.doc = self.col.insert_one(self.data)
         if self.doc.inserted_id:
             messagebox.showinfo("Insert","Success!")
-        self.load_data()
-        self.order()
+        self.delete_data()
+
+
+
+    def delete_data(self):
+        self.ordered_product.clear()
+        for i in self.tree.get_children():
+            self.tree.delete(i)
+
     def load_data(self):
         self.cur = self.col.find({})
         for d in self.cur:
-            self.tree_name = str(d['name'].encode('utf-8').decode('utf-8'))
-            self.tree_size = str(d['size'].encode('utf-8').decode('utf-8'))
-            self.tree_amount = d['amount']
-            self.tree.insert("", "end", values=(d['name'], d['size'], d['amount']))
+            # self.tree_name = str(d['name'].encode('utf-8').decode('utf-8'))
+            # self.tree_size = str(d['size'].encode('utf-8').decode('utf-8'))
+            # self.tree_amount = d['amount']
+            self.tree.insert("", "end", values=())
 
+            # self.load_data()
+    def close(self):
+        self.rootdangki.destroy()
 
 root = Tk()
 t = Window(root)
 root.mainloop()
-
